@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * KOLVAX Design System
- * Editorial, premium, calm. Inspired by Stripe, Linear, Ramp, Mercury.
- * Light theme only. No gradients, no large charts, no dark mode.
+ * KOLVAX Design System — v2 "Mission Control"
+ * Editorial, premium, alive. Light only.
+ * Inspirations: Stripe Dashboard, Linear, Attio, Mercury, Vercel.
  */
 
 @theme inline {
@@ -25,6 +25,8 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -37,17 +39,28 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
   --color-money: var(--money);
   --color-money-foreground: var(--money-foreground);
   --color-money-soft: var(--money-soft);
+  --color-money-deep: var(--money-deep);
+
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
+
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-warning-foreground: var(--warning-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
   --color-destructive-foreground: var(--destructive-foreground);
+
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-subtle: var(--border-subtle);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
@@ -65,22 +78,26 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-card: 0 1px 2px oklch(0.15 0.02 240 / 0.04), 0 1px 1px oklch(0.15 0.02 240 / 0.03);
-  --shadow-pop: 0 4px 16px oklch(0.15 0.02 240 / 0.08);
+  --shadow-card: 0 1px 0 oklch(0.15 0.02 240 / 0.03), 0 1px 2px oklch(0.15 0.02 240 / 0.04);
+  --shadow-raised: 0 1px 0 oklch(0.15 0.02 240 / 0.04), 0 6px 16px -6px oklch(0.15 0.02 240 / 0.08), 0 2px 4px -2px oklch(0.15 0.02 240 / 0.05);
+  --shadow-pop: 0 8px 32px -8px oklch(0.15 0.02 240 / 0.16), 0 2px 8px -2px oklch(0.15 0.02 240 / 0.08);
+  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.6);
 }
 
 :root {
   --radius: 12px;
 
-  /* Surfaces — warm near-white, like Mercury / Stripe docs */
-  --background: oklch(0.985 0.003 95);
+  /* Surfaces */
+  --background: oklch(0.985 0.004 95);
   --surface: oklch(1 0 0);
+  --surface-raised: oklch(1 0 0);
   --surface-muted: oklch(0.975 0.005 95);
+  --surface-sunken: oklch(0.965 0.006 95);
 
-  /* Ink — deep neutral */
-  --ink: oklch(0.22 0.015 250);
-  --ink-soft: oklch(0.42 0.012 250);
-  --ink-faint: oklch(0.62 0.01 250);
+  /* Ink */
+  --ink: oklch(0.18 0.018 252);
+  --ink-soft: oklch(0.42 0.014 252);
+  --ink-faint: oklch(0.62 0.012 252);
 
   --foreground: var(--ink);
   --card: var(--surface);
@@ -88,47 +105,54 @@
   --popover: var(--surface);
   --popover-foreground: var(--ink);
 
-  /* Primary — graphite ink for serious controls */
-  --primary: oklch(0.22 0.015 250);
+  --primary: oklch(0.20 0.018 252);
   --primary-foreground: oklch(0.985 0.003 95);
 
-  --secondary: oklch(0.96 0.006 95);
+  --secondary: oklch(0.965 0.006 95);
   --secondary-foreground: var(--ink);
 
-  --muted: oklch(0.96 0.005 95);
+  --muted: oklch(0.965 0.006 95);
   --muted-foreground: var(--ink-faint);
 
   --accent: oklch(0.94 0.012 145);
   --accent-foreground: oklch(0.32 0.06 155);
 
-  /* Money — deep editorial green for recovered revenue */
-  --money: oklch(0.48 0.11 155);
+  /* Money — editorial green */
+  --money: oklch(0.50 0.115 156);
+  --money-deep: oklch(0.36 0.10 156);
   --money-foreground: oklch(0.985 0.003 95);
-  --money-soft: oklch(0.96 0.04 155);
+  --money-soft: oklch(0.955 0.045 156);
 
-  --success: oklch(0.62 0.13 155);
+  /* Info — calm blue */
+  --info: oklch(0.52 0.13 250);
+  --info-soft: oklch(0.96 0.035 250);
+  --info-foreground: oklch(0.985 0.003 95);
+
+  --success: oklch(0.58 0.135 156);
   --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.78 0.13 75);
-  --warning-foreground: oklch(0.28 0.06 75);
+  --warning: oklch(0.70 0.145 70);
+  --warning-soft: oklch(0.965 0.06 80);
+  --warning-foreground: oklch(0.30 0.08 70);
   --destructive: oklch(0.58 0.18 27);
+  --destructive-soft: oklch(0.97 0.035 27);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.92 0.005 95);
+  --border: oklch(0.92 0.006 95);
   --border-strong: oklch(0.86 0.008 95);
-  --input: oklch(0.92 0.005 95);
-  --ring: oklch(0.48 0.11 155);
+  --border-subtle: oklch(0.955 0.005 95);
+  --input: oklch(0.92 0.006 95);
+  --ring: oklch(0.50 0.115 156);
 
-  --sidebar: oklch(0.98 0.004 95);
+  --sidebar: oklch(0.975 0.005 95);
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: oklch(0.48 0.11 155);
+  --sidebar-primary: oklch(0.50 0.115 156);
   --sidebar-primary-foreground: oklch(0.99 0 0);
   --sidebar-accent: oklch(0.95 0.006 95);
   --sidebar-accent-foreground: var(--ink);
-  --sidebar-border: oklch(0.92 0.005 95);
-  --sidebar-ring: oklch(0.48 0.11 155);
+  --sidebar-border: oklch(0.92 0.006 95);
+  --sidebar-ring: oklch(0.50 0.115 156);
 }
 
-/* Dark mode tokens kept identical to light — product is light-only. */
 .dark {
   color-scheme: light;
 }
@@ -147,23 +171,30 @@
   }
   h1, h2, h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.022em;
     font-weight: 500;
+  }
+  /* Sunken canvas with subtle grid for the app shell */
+  .app-canvas {
+    background-color: var(--color-surface-sunken);
+    background-image:
+      radial-gradient(circle at 1px 1px, oklch(0.20 0.018 252 / 0.045) 1px, transparent 0);
+    background-size: 28px 28px;
   }
 }
 
 @utility editorial-h1 {
   font-family: var(--font-display);
   font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  letter-spacing: -0.028em;
+  line-height: 1.02;
 }
 
 @utility money-text {
   font-family: var(--font-display);
   font-weight: 500;
   font-feature-settings: "tnum", "lnum";
-  letter-spacing: -0.02em;
+  letter-spacing: -0.022em;
 }
 
 @utility tabular {
@@ -175,4 +206,86 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
+}
+
+@utility card-raised {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-raised);
+}
+
+@utility hairline {
+  border: 1px solid var(--color-border);
+}
+
+@utility hero-surface {
+  position: relative;
+  background:
+    radial-gradient(120% 80% at 0% 0%, oklch(0.97 0.05 156 / 0.55), transparent 55%),
+    radial-gradient(80% 60% at 100% 0%, oklch(0.97 0.04 250 / 0.35), transparent 60%),
+    linear-gradient(180deg, oklch(1 0 0), oklch(0.985 0.004 95));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-raised);
+  overflow: hidden;
+}
+
+@utility attention-surface {
+  position: relative;
+  background:
+    linear-gradient(180deg, oklch(0.985 0.035 80), oklch(0.975 0.045 75));
+  border: 1px solid oklch(0.86 0.08 75);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 1px 0 oklch(0.30 0.08 70 / 0.04), 0 8px 24px -12px oklch(0.30 0.08 70 / 0.18);
+}
+
+@utility ring-soft {
+  box-shadow: 0 0 0 1px var(--color-border), var(--shadow-card);
+}
+
+@utility live-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--color-money);
+}
+@utility live-dot-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background-color: var(--color-money);
+  opacity: 0.35;
+  animation: kv-pulse 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
+}
+
+@keyframes kv-pulse {
+  0%   { transform: scale(0.6); opacity: 0.5; }
+  80%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes kv-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@utility shimmer {
+  background: linear-gradient(90deg, transparent 0%, oklch(0.20 0.018 252 / 0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: kv-shimmer 2.4s linear infinite;
+}
+
+@utility focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 3px oklch(0.50 0.115 156 / 0.18);
+}
+
+/* Subtle progress track */
+@utility track {
+  background-color: var(--color-surface-sunken);
+  border-radius: 9999px;
+  overflow: hidden;
 }
