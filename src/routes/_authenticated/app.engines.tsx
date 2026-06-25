@@ -4,13 +4,36 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/use-profile";
 import { PageContainer, PageHeader } from "@/components/portal/app-shell";
 import { Card, EmptyState } from "@/components/portal/card";
-import { StatusPill } from "@/components/portal/status-pill";
-import { ENGINE_DESCRIPTIONS, ENGINE_LABELS, formatMoney, formatRelative } from "@/lib/format";
+import { Sparkline, ProgressRing } from "@/components/portal/sparkline";
+import { LiveDot } from "@/components/portal/live-dot";
+import {
+  ENGINE_DESCRIPTIONS,
+  ENGINE_LABELS,
+  formatMoney,
+  formatRelative,
+} from "@/lib/format";
+import {
+  PhoneOff,
+  Moon,
+  RotateCcw,
+  Calendar,
+  Star,
+  Sparkles,
+  ArrowUpRight,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/engines")({
   head: () => ({ meta: [{ title: "Revenue Engines — KOLVAX" }] }),
   component: EnginesPage,
 });
+
+const ICONS: Record<string, typeof Sparkles> = {
+  missed_call: PhoneOff,
+  after_hours: Moon,
+  reactivation: RotateCcw,
+  no_show: Calendar,
+  reputation: Star,
+};
 
 function EnginesPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
@@ -30,66 +53,188 @@ function EnginesPage() {
     },
   });
 
-  if (!profileLoading && !businessId) {
-    return (
-      <PageContainer>
-        <PageHeader
-          eyebrow="Revenue engines"
-          title="Five engines working in the background."
-          description="Each engine recovers revenue from a different moment of friction."
-        />
-        <Card className="mt-8">
-          <EmptyState title="Your workspace is not connected yet." description="Refresh once; the demo workspace link has been repaired." />
-        </Card>
-      </PageContainer>
-    );
-  }
+  const totalRecovered = (engines ?? []).reduce((s, e) => s + (e.recovered_cents_mtd ?? 0), 0);
+  const totalInMotion = (engines ?? []).reduce((s, e) => s + (e.opportunities_in_motion ?? 0), 0);
+  const healthyCount = (engines ?? []).filter((e) => e.health === "healthy").length;
 
   return (
     <PageContainer>
       <PageHeader
         eyebrow="Revenue engines"
-        title="Five engines working in the background."
-        description="Each engine recovers revenue from a different moment of friction. Your operations team tunes them weekly."
+        title="Five engines. One operating system for revenue."
+        description="Each engine recovers revenue from a different moment of friction. Your operations team tunes them weekly so the numbers keep climbing."
       />
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        {(engines ?? []).length === 0 ? (
-          <Card className="lg:col-span-2">
-            <EmptyState title="No revenue engines yet." description="Deployed engines will show health, recovered revenue, and active opportunities here." />
-          </Card>
-        ) : (engines ?? []).map((e) => (
-          <Card key={e.id}>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-base font-semibold text-foreground">{ENGINE_LABELS[e.engine_type]}</h2>
-                <p className="mt-1.5 text-sm text-ink-soft max-w-md">{ENGINE_DESCRIPTIONS[e.engine_type]}</p>
-              </div>
-              <StatusPill tone={e.health === "healthy" ? "success" : e.health === "attention" ? "warning" : "danger"}>
-                {e.health === "healthy" ? "Healthy" : e.health === "attention" ? "Attention" : "Offline"}
-              </StatusPill>
-            </div>
-            <div className="mt-6 grid grid-cols-3 gap-4 pt-5 border-t border-border">
-              <Stat label="Recovered this month" value={formatMoney(e.recovered_cents_mtd)} />
-              <Stat label="In motion" value={String(e.opportunities_in_motion)} />
-              <Stat label="Last outcome" value={formatRelative(e.last_outcome_at)} />
-            </div>
-            {e.notes && (
-              <p className="mt-5 text-sm text-ink-soft bg-secondary/60 rounded-md p-3 border border-border">
-                {e.notes}
-              </p>
+
+      {!profileLoading && !businessId ? (
+        <Card>
+          <EmptyState title="Your workspace is not connected yet." />
+        </Card>
+      ) : (
+        <>
+          <section className="grid gap-4 sm:grid-cols-3 mb-10">
+            <SummaryStat label="Recovered this month" value={formatMoney(totalRecovered)} tone="money" />
+            <SummaryStat label="Opportunities in motion" value={String(totalInMotion)} tone="info" />
+            <SummaryStat label="Engines healthy" value={`${healthyCount} / ${(engines ?? []).length}`} tone="money" />
+          </section>
+
+          <div className="space-y-5">
+            {(engines ?? []).length === 0 ? (
+              <Card>
+                <EmptyState title="No revenue engines yet." />
+              </Card>
+            ) : (
+              (engines ?? []).map((e) => {
+                const Icon = ICONS[e.engine_type] ?? Sparkles;
+                const healthy = e.health === "healthy";
+                const tone = healthy ? "money" : e.health === "attention" ? "warning" : "neutral";
+                const utilization = Math.min(1, (e.opportunities_in_motion ?? 0) / 12);
+                return (
+                  <article
+                    key={e.id}
+                    className="group relative overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-raised)] transition-all"
+                  >
+                    <div className="grid lg:grid-cols-[1.3fr_1fr]">
+                      {/* LEFT — identity + KPI */}
+                      <div className="p-7 lg:p-8 border-b lg:border-b-0 lg:border-r border-border-subtle relative">
+                        <div
+                          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                          style={{
+                            background:
+                              "radial-gradient(60% 50% at 0% 0%, var(--color-money), transparent 70%)",
+                          }}
+                        />
+                        <div className="relative">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3.5">
+                              <span className="grid h-11 w-11 place-items-center rounded-xl bg-money-soft text-money border border-money/15">
+                                <Icon className="h-5 w-5" strokeWidth={1.75} />
+                              </span>
+                              <div>
+                                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-faint">
+                                  <LiveDot tone={tone === "warning" ? "warning" : "money"} />
+                                  <span>
+                                    {healthy ? "Healthy" : e.health === "attention" ? "Needs review" : "Offline"}
+                                  </span>
+                                </div>
+                                <h2 className="editorial-h1 text-2xl text-foreground mt-1">
+                                  {ENGINE_LABELS[e.engine_type]}
+                                </h2>
+                              </div>
+                            </div>
+                            <ProgressRing
+                              value={utilization}
+                              tone={tone === "warning" ? "warning" : "money"}
+                              size={52}
+                              stroke={4}
+                            />
+                          </div>
+
+                          <p className="mt-4 text-sm text-ink-soft max-w-xl leading-relaxed">
+                            {ENGINE_DESCRIPTIONS[e.engine_type]}
+                          </p>
+
+                          <div className="mt-7 flex items-end justify-between gap-4">
+                            <div>
+                              <p className="text-[10px] uppercase tracking-wider text-ink-faint">
+                                Recovered this month
+                              </p>
+                              <p className="money-text text-4xl text-foreground mt-1 leading-none">
+                                {formatMoney(e.recovered_cents_mtd)}
+                              </p>
+                            </div>
+                            <Sparkline
+                              seed={e.id}
+                              tone={tone === "warning" ? "warning" : "money"}
+                              width={160}
+                              height={52}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* RIGHT — operational detail */}
+                      <div className="p-7 lg:p-8 bg-surface-sunken/40">
+                        <div className="grid grid-cols-2 gap-4">
+                          <Metric label="In motion" value={String(e.opportunities_in_motion ?? 0)} />
+                          <Metric label="Last outcome" value={formatRelative(e.last_outcome_at)} />
+                        </div>
+
+                        <div className="mt-6">
+                          <p className="text-[10px] uppercase tracking-wider text-ink-faint mb-2">
+                            Capacity
+                          </p>
+                          <div className="track h-2">
+                            <div
+                              className={
+                                "h-full transition-[width] duration-700 " +
+                                (tone === "warning"
+                                  ? "bg-warning"
+                                  : "bg-gradient-to-r from-money to-money-deep")
+                              }
+                              style={{ width: `${Math.round(utilization * 100)}%` }}
+                            />
+                          </div>
+                          <p className="text-[11px] text-ink-faint mt-1.5">
+                            Running at {Math.round(utilization * 100)}% of nominal load
+                          </p>
+                        </div>
+
+                        {e.notes && (
+                          <div className="mt-6 rounded-lg border border-border-subtle bg-surface p-3.5">
+                            <p className="text-[10px] uppercase tracking-wider text-ink-faint mb-1">
+                              Operator note
+                            </p>
+                            <p className="text-sm text-ink-soft leading-relaxed">{e.notes}</p>
+                          </div>
+                        )}
+
+                        <div className="mt-6 flex items-center justify-end text-xs text-money opacity-70 group-hover:opacity-100 transition-opacity">
+                          <span className="inline-flex items-center gap-1 font-medium">
+                            View engine timeline
+                            <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })
             )}
-          </Card>
-        ))}
-      </div>
+          </div>
+        </>
+      )}
     </PageContainer>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function SummaryStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "money" | "info";
+}) {
   return (
-    <div>
-      <p className="text-xs uppercase tracking-wider text-ink-faint">{label}</p>
-      <p className="mt-1 text-lg font-medium text-foreground tabular">{value}</p>
+    <div className="card-raised p-5">
+      <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">{label}</p>
+      <p
+        className={
+          "money-text text-3xl mt-2 leading-none " + (tone === "money" ? "text-foreground" : "text-foreground")
+        }
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border-subtle bg-surface p-3.5">
+      <p className="text-[10px] uppercase tracking-wider text-ink-faint">{label}</p>
+      <p className="mt-1 text-base font-medium text-foreground tabular">{value}</p>
     </div>
   );
 }
