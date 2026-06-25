@@ -2,17 +2,20 @@ import { createFileRoute, Outlet, redirect, Link, useRouterState, useNavigate } 
 import { ShieldCheck, Building2, Activity as ActivityIcon, ArrowLeft, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { verifyOpsAccess } from "@/lib/ops-access.functions";
 
 export const Route = createFileRoute("/_authenticated/ops")({
-  beforeLoad: async ({ context }) => {
-    const userId = (context as { user?: { id: string } }).user?.id;
-    if (!userId) throw redirect({ to: "/auth" });
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .in("role", ["ops_admin", "ops_staff"]);
-    if (!data || data.length === 0) throw redirect({ to: "/app" });
+  beforeLoad: async () => {
+    // Server-side role check — runs through requireSupabaseAuth middleware so
+    // the bearer token is verified server-side and cannot be bypassed by
+    // patching the SPA router in the browser.
+    try {
+      const { allowed } = await verifyOpsAccess();
+      if (!allowed) throw redirect({ to: "/app" });
+    } catch (err) {
+      if (err && typeof err === "object" && "to" in err) throw err;
+      throw redirect({ to: "/auth" });
+    }
   },
   component: OpsLayout,
 });
