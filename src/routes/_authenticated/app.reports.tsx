@@ -13,18 +13,19 @@ export const Route = createFileRoute("/_authenticated/app/reports")({
 });
 
 function ReportsPage() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
 
   const { data: reports } = useQuery({
     queryKey: ["reports", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("reports")
         .select("*")
         .eq("business_id", businessId!)
         .order("period_end", { ascending: false });
+      if (error) throw error;
       return data ?? [];
     },
   });
@@ -40,7 +41,9 @@ function ReportsPage() {
         description="Plain-language summaries of what KOLVAX recovered, week by week."
       />
       <div className="mt-8 space-y-4">
-        {(reports ?? []).length === 0 ? (
+        {!profileLoading && !businessId ? (
+          <Card><EmptyState title="Your workspace is not connected yet." description="Refresh once; the demo workspace link has been repaired." /></Card>
+        ) : (reports ?? []).length === 0 ? (
           <Card><EmptyState title="No reports yet." description="Your first weekly summary lands at the end of this week." /></Card>
         ) : (
           (reports ?? []).map((r) => (

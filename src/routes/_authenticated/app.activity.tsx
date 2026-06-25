@@ -13,19 +13,20 @@ export const Route = createFileRoute("/_authenticated/app/activity")({
 });
 
 function ActivityPage() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
 
   const { data: events } = useQuery({
     queryKey: ["activities", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("activities")
         .select("*")
         .eq("business_id", businessId!)
         .order("occurred_at", { ascending: false })
         .limit(200);
+      if (error) throw error;
       return data ?? [];
     },
   });
@@ -40,7 +41,9 @@ function ActivityPage() {
         description="A running record of what KOLVAX has done for your business."
       />
       <div className="mt-8 space-y-10">
-        {grouped.length === 0 ? (
+        {!profileLoading && !businessId ? (
+          <Card><EmptyState title="Your workspace is not connected yet." description="Refresh once; the demo workspace link has been repaired." /></Card>
+        ) : grouped.length === 0 ? (
           <Card><EmptyState title="No activity yet." description="As KOLVAX recovers revenue, it'll show up here." /></Card>
         ) : (
           grouped.map(([day, items]) => (

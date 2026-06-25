@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/app/")({
 });
 
 function CommandCenter() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
   const businessName = profile?.profile?.business?.name ?? "your business";
   const recoveredMtd = profile?.profile?.business?.monthly_recovered_cents ?? 0;
@@ -39,6 +39,8 @@ function CommandCenter() {
         supabase.from("revenue_engines").select("*").eq("business_id", businessId).order("engine_type"),
         supabase.from("reports").select("*").eq("business_id", businessId).eq("period_type", "weekly").order("period_end", { ascending: false }).limit(1).maybeSingle(),
       ]);
+      const firstError = handled.error ?? inMotion.error ?? attention.error ?? engines.error ?? weekly.error;
+      if (firstError) throw firstError;
       return {
         handled: handled.data ?? [],
         inMotionTotal: (inMotion.data ?? []).reduce((s, r) => s + (r.opportunities_in_motion ?? 0), 0),
@@ -49,10 +51,23 @@ function CommandCenter() {
     },
   });
 
-  if (isLoading || !data) {
+  if (profileLoading || isLoading) {
     return (
       <PageContainer>
         <div className="h-64 animate-pulse rounded-xl bg-secondary/40" />
+      </PageContainer>
+    );
+  }
+
+  if (!businessId || !data) {
+    return (
+      <PageContainer>
+        <Card>
+          <EmptyState
+            title="Your workspace is not connected yet."
+            description="I repaired the demo workspace link. Refresh once; if this still appears, sign out and sign back in."
+          />
+        </Card>
       </PageContainer>
     );
   }
@@ -110,14 +125,18 @@ function CommandCenter() {
             description="Opportunities KOLVAX is working on right now."
           />
           <div className="space-y-3">
-            {data.engines.map((e) => (
-              <div key={e.id} className="flex items-center justify-between py-1.5">
-                <span className="text-sm text-foreground">{ENGINE_LABELS[e.engine_type]}</span>
-                <span className="text-sm tabular text-ink-soft">
-                  {e.opportunities_in_motion} in motion
-                </span>
-              </div>
-            ))}
+            {data.engines.length === 0 ? (
+              <EmptyState title="No engines are deployed yet." description="Engine status appears here once setup is connected." />
+            ) : (
+              data.engines.map((e) => (
+                <div key={e.id} className="flex items-center justify-between py-1.5">
+                  <span className="text-sm text-foreground">{ENGINE_LABELS[e.engine_type]}</span>
+                  <span className="text-sm tabular text-ink-soft">
+                    {e.opportunities_in_motion} in motion
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </Card>
 
@@ -151,17 +170,21 @@ function CommandCenter() {
         <Card>
           <CardHeader title="Engine health" description="All five engines at a glance." />
           <div className="space-y-3">
-            {data.engines.map((e) => (
-              <div key={e.id} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-ink-faint" strokeWidth={1.75} />
-                  <span className="text-sm text-foreground">{ENGINE_LABELS[e.engine_type]}</span>
+            {data.engines.length === 0 ? (
+              <EmptyState title="No engine health to show yet." />
+            ) : (
+              data.engines.map((e) => (
+                <div key={e.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-3.5 w-3.5 text-ink-faint" strokeWidth={1.75} />
+                    <span className="text-sm text-foreground">{ENGINE_LABELS[e.engine_type]}</span>
+                  </div>
+                  <StatusPill tone={e.health === "healthy" ? "success" : e.health === "attention" ? "warning" : "danger"}>
+                    {e.health === "healthy" ? "Healthy" : e.health === "attention" ? "Attention" : "Offline"}
+                  </StatusPill>
                 </div>
-                <StatusPill tone={e.health === "healthy" ? "success" : e.health === "attention" ? "warning" : "danger"}>
-                  {e.health === "healthy" ? "Healthy" : e.health === "attention" ? "Attention" : "Offline"}
-                </StatusPill>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>
