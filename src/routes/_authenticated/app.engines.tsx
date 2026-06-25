@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/use-profile";
 import { PageContainer, PageHeader } from "@/components/portal/app-shell";
-import { Card } from "@/components/portal/card";
+import { Card, EmptyState } from "@/components/portal/card";
 import { StatusPill } from "@/components/portal/status-pill";
 import { ENGINE_DESCRIPTIONS, ENGINE_LABELS, formatMoney, formatRelative } from "@/lib/format";
 
@@ -13,21 +13,37 @@ export const Route = createFileRoute("/_authenticated/app/engines")({
 });
 
 function EnginesPage() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
 
   const { data: engines } = useQuery({
     queryKey: ["engines", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("revenue_engines")
         .select("*")
         .eq("business_id", businessId!)
         .order("engine_type");
+      if (error) throw error;
       return data ?? [];
     },
   });
+
+  if (!profileLoading && !businessId) {
+    return (
+      <PageContainer>
+        <PageHeader
+          eyebrow="Revenue engines"
+          title="Five engines working in the background."
+          description="Each engine recovers revenue from a different moment of friction."
+        />
+        <Card className="mt-8">
+          <EmptyState title="Your workspace is not connected yet." description="Refresh once; the demo workspace link has been repaired." />
+        </Card>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -37,7 +53,11 @@ function EnginesPage() {
         description="Each engine recovers revenue from a different moment of friction. Your operations team tunes them weekly."
       />
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        {(engines ?? []).map((e) => (
+        {(engines ?? []).length === 0 ? (
+          <Card className="lg:col-span-2">
+            <EmptyState title="No revenue engines yet." description="Deployed engines will show health, recovered revenue, and active opportunities here." />
+          </Card>
+        ) : (engines ?? []).map((e) => (
           <Card key={e.id}>
             <div className="flex items-start justify-between gap-4">
               <div>

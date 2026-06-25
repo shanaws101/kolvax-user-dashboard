@@ -20,7 +20,7 @@ const STATUS_TONE = {
 const STATUS_LABEL = { vip: "VIP", active: "Active", new: "New", lapsed: "Lapsed" } as const;
 
 function CustomersPage() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
   const [q, setQ] = useState("");
 
@@ -28,11 +28,12 @@ function CustomersPage() {
     queryKey: ["customers", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("customers")
         .select("*")
         .eq("business_id", businessId!)
         .order("last_visit_at", { ascending: false, nullsFirst: false });
+      if (error) throw error;
       return data ?? [];
     },
   });
@@ -76,8 +77,10 @@ function CustomersPage() {
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-ink-faint"
           />
         </div>
-        {filtered.length === 0 ? (
-          <EmptyState title="No customers match." />
+        {!profileLoading && !businessId ? (
+          <EmptyState title="Your workspace is not connected yet." description="Refresh once; the demo workspace link has been repaired." />
+        ) : filtered.length === 0 ? (
+          <EmptyState title={q ? "No customers match." : "No customers yet."} description={q ? undefined : "Customer records appear here after the workspace is connected."} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
