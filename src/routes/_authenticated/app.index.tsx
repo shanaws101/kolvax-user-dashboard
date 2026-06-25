@@ -356,19 +356,9 @@ function CommandCenter() {
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {data.engines.map((e) => {
-              const Icon = ENGINE_ICONS[e.engine_type] ?? Sparkles;
-              return (
-                <EngineWidget
-                  key={e.id}
-                  engine={{
-                    ...e,
-                    notes: e.notes,
-                  }}
-                  href="/app/engines"
-                />
-              );
-            })}
+            {data.engines.map((e) => (
+              <EngineWidget key={e.id} engine={e} href="/app/engines" />
+            ))}
           </div>
         )}
       </section>
