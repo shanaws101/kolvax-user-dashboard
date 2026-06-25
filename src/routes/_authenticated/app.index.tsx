@@ -9,31 +9,12 @@ import { OpportunityCard, type Opportunity } from "@/components/portal/opportuni
 import { EngineWidget } from "@/components/portal/engine-widget";
 import { LiveDot } from "@/components/portal/live-dot";
 import { ENGINE_LABELS, formatMoney, formatRelative } from "@/lib/format";
-import {
-  ArrowRight,
-  CheckCircle2,
-  AlertCircle,
-  Sparkles,
-  PhoneOff,
-  Moon,
-  RotateCcw,
-  Calendar,
-  Star,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, AlertCircle, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   head: () => ({ meta: [{ title: "Command Center — KOLVAX" }] }),
   component: CommandCenter,
 });
-
-const ENGINE_ICONS: Record<string, typeof Sparkles> = {
-  missed_call: PhoneOff,
-  after_hours: Moon,
-  reactivation: RotateCcw,
-  no_show: Calendar,
-  reputation: Star,
-};
 
 function CommandCenter() {
   const { data: profile, isLoading: profileLoading } = useProfile();
