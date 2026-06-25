@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/lib/use-profile";
 import { PageContainer, PageHeader } from "@/components/portal/app-shell";
 import { Card, CardHeader } from "@/components/portal/card";
 import { StatusPill } from "@/components/portal/status-pill";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Pencil, Save, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({ meta: [{ title: "Settings — KOLVAX" }] }),
@@ -20,8 +21,31 @@ const INTEGRATION_KIND_LABELS = {
 } as const;
 
 function SettingsPage() {
-  const { data: profile } = useProfile();
+  const queryClient = useQueryClient();
+  const { data: profile, isLoading: profileLoading } = useProfile();
   const businessId = profile?.profile?.business_id;
+  const business = profile?.profile?.business;
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState({
+    name: "",
+    owner_name: "",
+    industry: "",
+    timezone: "",
+    phone: "",
+    address: "",
+  });
+
+  useEffect(() => {
+    if (!business) return;
+    setDraft({
+      name: business.name ?? "",
+      owner_name: business.owner_name ?? "",
+      industry: business.industry ?? "",
+      timezone: business.timezone ?? "",
+      phone: business.phone ?? "",
+      address: business.address ?? "",
+    });
+  }, [business]);
 
   const { data: settings } = useQuery({
     queryKey: ["settings", businessId],
@@ -32,11 +56,33 @@ function SettingsPage() {
         // intentionally do not select `config` — customers see status only
         supabase.from("integrations").select("id, kind, provider, status, connected_at").eq("business_id", businessId!),
       ]);
+      if (locations.error) throw locations.error;
+      if (integrations.error) throw integrations.error;
       return { locations: locations.data ?? [], integrations: integrations.data ?? [] };
     },
   });
 
-  const business = profile?.profile?.business;
+  const saveBusiness = useMutation({
+    mutationFn: async () => {
+      if (!businessId) throw new Error("No workspace connected");
+      const { error } = await supabase
+        .from("businesses")
+        .update({
+          name: draft.name.trim(),
+          owner_name: draft.owner_name.trim() || null,
+          industry: draft.industry.trim() || null,
+          timezone: draft.timezone.trim() || "America/Chicago",
+          phone: draft.phone.trim() || null,
+          address: draft.address.trim() || null,
+        })
+        .eq("id", businessId);
+      if (error) throw error;
+    },
+    onSuccess: async () => {
+      setEditing(false);
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+  });
 
   return (
     <PageContainer>
@@ -48,15 +94,77 @@ function SettingsPage() {
 
       <div className="mt-8 space-y-6">
         <Card>
-          <CardHeader title="Business profile" description="The basics." />
-          <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
-            <Row label="Business name" value={business?.name} />
-            <Row label="Owner" value={business?.owner_name} />
-            <Row label="Industry" value={business?.industry} />
-            <Row label="Timezone" value={business?.timezone} />
-            <Row label="Phone" value={business?.phone} />
-            <Row label="Address" value={business?.address} />
-          </dl>
+          <CardHeader
+            title="Business profile"
+            description="The basics."
+            action={
+              editing ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditing(false);
+                      if (business) {
+                        setDraft({
+                          name: business.name ?? "",
+                          owner_name: business.owner_name ?? "",
+                          industry: business.industry ?? "",
+                          timezone: business.timezone ?? "",
+                          phone: business.phone ?? "",
+                          address: business.address ?? "",
+                        });
+                      }
+                    }}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface text-ink-soft hover:bg-secondary hover:text-foreground"
+                    aria-label="Cancel editing"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => saveBusiness.mutate()}
+                    disabled={saveBusiness.isPending || !draft.name.trim()}
+                    className="inline-flex h-8 items-center gap-2 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Save className="h-3.5 w-3.5" /> Save
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  disabled={profileLoading || !businessId}
+                  className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit settings
+                </button>
+              )
+            }
+          />
+          {!profileLoading && !businessId ? (
+            <p className="text-sm text-ink-soft">Your workspace is not connected yet. Refresh once; the demo workspace link has been repaired.</p>
+          ) : editing ? (
+            <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <Field label="Business name" value={draft.name} onChange={(name) => setDraft((d) => ({ ...d, name }))} required />
+              <Field label="Owner" value={draft.owner_name} onChange={(owner_name) => setDraft((d) => ({ ...d, owner_name }))} />
+              <Field label="Industry" value={draft.industry} onChange={(industry) => setDraft((d) => ({ ...d, industry }))} />
+              <Field label="Timezone" value={draft.timezone} onChange={(timezone) => setDraft((d) => ({ ...d, timezone }))} />
+              <Field label="Phone" value={draft.phone} onChange={(phone) => setDraft((d) => ({ ...d, phone }))} />
+              <Field label="Address" value={draft.address} onChange={(address) => setDraft((d) => ({ ...d, address }))} />
+              {saveBusiness.error && (
+                <p className="sm:col-span-2 text-sm text-destructive">Could not save settings. Please try again.</p>
+              )}
+            </div>
+          ) : (
+            <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+              <Row label="Business name" value={business?.name} />
+              <Row label="Owner" value={business?.owner_name} />
+              <Row label="Industry" value={business?.industry} />
+              <Row label="Timezone" value={business?.timezone} />
+              <Row label="Phone" value={business?.phone} />
+              <Row label="Address" value={business?.address} />
+            </dl>
+          )}
         </Card>
 
         <Card>
@@ -125,6 +233,30 @@ function SettingsPage() {
         </Card>
       </div>
     </PageContainer>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  required = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="text-xs uppercase tracking-wider text-ink-faint">{label}</span>
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+        className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-ink-faint focus:border-primary"
+      />
+    </label>
   );
 }
 
