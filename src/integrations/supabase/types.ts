@@ -571,19 +571,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_business_id: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_member_of_business: {
-        Args: { _business_id: string }
-        Returns: boolean
-      }
-      is_ops: { Args: { _user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       activity_kind:
