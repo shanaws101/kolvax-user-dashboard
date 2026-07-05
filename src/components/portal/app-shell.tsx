@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex bg-background">
-      <aside className="hidden lg:flex w-[244px] shrink-0 flex-col border-r border-border bg-sidebar/80 backdrop-blur">
+      <aside className="hidden lg:flex w-[244px] shrink-0 flex-col border-r border-border bg-sidebar/80 backdrop-blur sticky top-0 h-screen self-start">
         <div className="px-5 pt-6 pb-5">
           <Link to="/app" className="inline-flex items-center gap-2.5 group">
             <span className="grid h-7 w-7 place-items-center rounded-md bg-foreground text-background text-[11px] font-semibold tracking-tight shadow-[var(--shadow-card)]">
