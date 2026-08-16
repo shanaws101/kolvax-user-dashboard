@@ -16,27 +16,27 @@ type Engine = {
 
 export function EngineWidget({ engine, href }: { engine: Engine; href?: string }) {
   const healthy = engine.health === "healthy";
-  const tone = healthy ? "money" : engine.health === "attention" ? "warning" : "neutral";
+  const tone = healthy ? "primary" : engine.health === "attention" ? "warning" : "neutral";
   const utilization = Math.min(1, engine.opportunities_in_motion / 12);
 
   const inner = (
-    <div className="group relative h-full flex flex-col rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-raised)] hover:-translate-y-0.5">
+    <div className="group relative h-full flex flex-col rounded-lg border border-border bg-surface p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-ink-faint">
-            <LiveDot tone={tone === "warning" ? "warning" : "money"} />
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">
+            <LiveDot tone={tone === "warning" ? "warning" : "primary"} />
             <span>{healthy ? "Healthy" : engine.health === "attention" ? "Needs review" : "Offline"}</span>
           </div>
           <h3 className="mt-2 text-[15px] font-semibold text-foreground leading-tight truncate">
             {ENGINE_LABELS[engine.engine_type]}
           </h3>
         </div>
-        <ProgressRing value={utilization} tone={tone === "warning" ? "warning" : "money"} size={40} stroke={3.5} />
+        <ProgressRing value={utilization} tone={tone === "warning" ? "warning" : "primary"} size={40} stroke={3.5} />
       </div>
 
       <div className="mt-5 flex items-end justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-ink-faint">Recovered MTD</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint">Recovered MTD</p>
           <p className="money-text text-2xl text-foreground mt-1">{formatMoney(engine.recovered_cents_mtd)}</p>
         </div>
         <Sparkline seed={engine.id} tone={tone === "warning" ? "warning" : "money"} width={84} height={28} />
@@ -54,7 +54,7 @@ export function EngineWidget({ engine, href }: { engine: Engine; href?: string }
       </div>
 
       {href && (
-        <div className="mt-4 flex items-center gap-1 text-[11px] text-money font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="mt-4 flex items-center gap-1 text-[11px] text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
           Open engine <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
         </div>
       )}

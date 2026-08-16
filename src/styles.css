@@ -5,21 +5,22 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * KOLVAX Design System — v2 "Mission Control"
- * Editorial, premium, alive. Light only.
- * Inspirations: Stripe Dashboard, Linear, Attio, Mercury, Vercel.
+ * KOLVAX Design System — v3 "Cursor Editorial"
+ * Warm cream canvas · hairline-only depth · single orange accent
+ * Inspirations: Cursor.com, Stripe Dashboard, Linear, Mercury, Vercel.
+ * Light theme only.
  */
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
-  --radius-2xl: 28px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 9999px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -33,6 +34,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -78,26 +80,28 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-card: 0 1px 0 oklch(0.15 0.02 240 / 0.03), 0 1px 2px oklch(0.15 0.02 240 / 0.04);
-  --shadow-raised: 0 1px 0 oklch(0.15 0.02 240 / 0.04), 0 6px 16px -6px oklch(0.15 0.02 240 / 0.08), 0 2px 4px -2px oklch(0.15 0.02 240 / 0.05);
-  --shadow-pop: 0 8px 32px -8px oklch(0.15 0.02 240 / 0.16), 0 2px 8px -2px oklch(0.15 0.02 240 / 0.08);
-  --shadow-inset: inset 0 1px 0 oklch(1 0 0 / 0.6);
+  /* Timeline pastel tokens — scoped to in-product agent visualization only */
+  --color-timeline-thinking: #dfa88f;
+  --color-timeline-grep: #9fc9a2;
+  --color-timeline-read: #9fbbe0;
+  --color-timeline-edit: #c0a8dd;
+  --color-timeline-done: #c08532;
 }
 
 :root {
   --radius: 12px;
 
-  /* Surfaces */
-  --background: oklch(0.985 0.004 95);
-  --surface: oklch(1 0 0);
-  --surface-raised: oklch(1 0 0);
-  --surface-muted: oklch(0.975 0.005 95);
-  --surface-sunken: oklch(0.965 0.006 95);
+  /* Surfaces — warm cream canvas */
+  --background: #f7f7f4;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-muted: #fafaf7;
+  --surface-sunken: #f2f1ed;
 
-  /* Ink */
-  --ink: oklch(0.18 0.018 252);
-  --ink-soft: oklch(0.42 0.014 252);
-  --ink-faint: oklch(0.62 0.012 252);
+  /* Ink — warm near-black */
+  --ink: #26251e;
+  --ink-soft: #5a5852;
+  --ink-faint: #807d72;
 
   --foreground: var(--ink);
   --card: var(--surface);
@@ -105,52 +109,59 @@
   --popover: var(--surface);
   --popover-foreground: var(--ink);
 
-  --primary: oklch(0.20 0.018 252);
-  --primary-foreground: oklch(0.985 0.003 95);
+  /* Primary — Cursor Orange (scarce, CTAs + brand only) */
+  --primary: #f54e00;
+  --primary-foreground: #ffffff;
+  --primary-active: #d04200;
 
-  --secondary: oklch(0.965 0.006 95);
+  --secondary: #f2f1ed;
   --secondary-foreground: var(--ink);
 
-  --muted: oklch(0.965 0.006 95);
+  --muted: #f2f1ed;
   --muted-foreground: var(--ink-faint);
 
-  --accent: oklch(0.94 0.012 145);
-  --accent-foreground: oklch(0.32 0.06 155);
+  --accent: #f2f1ed;
+  --accent-foreground: var(--ink);
 
-  /* Money — editorial green */
-  --money: oklch(0.50 0.115 156);
-  --money-deep: oklch(0.36 0.10 156);
-  --money-foreground: oklch(0.985 0.003 95);
-  --money-soft: oklch(0.955 0.045 156);
+  /* Money — kept as semantic green for revenue values */
+  --money: #1f8a65;
+  --money-deep: #186d50;
+  --money-foreground: #ffffff;
+  --money-soft: #e8f5ef;
 
   /* Info — calm blue */
-  --info: oklch(0.52 0.13 250);
-  --info-soft: oklch(0.96 0.035 250);
-  --info-foreground: oklch(0.985 0.003 95);
+  --info: #4a7fbf;
+  --info-soft: #eaf1f8;
+  --info-foreground: #ffffff;
 
-  --success: oklch(0.58 0.135 156);
-  --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.70 0.145 70);
-  --warning-soft: oklch(0.965 0.06 80);
-  --warning-foreground: oklch(0.30 0.08 70);
-  --destructive: oklch(0.58 0.18 27);
-  --destructive-soft: oklch(0.97 0.035 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  --success: #1f8a65;
+  --success-foreground: #ffffff;
+  --warning: #c08532;
+  --warning-soft: #faf3e6;
+  --warning-foreground: #6b4a1c;
+  --destructive: #cf2d56;
+  --destructive-soft: #fce8ed;
+  --destructive-foreground: #ffffff;
 
-  --border: oklch(0.92 0.006 95);
-  --border-strong: oklch(0.86 0.008 95);
-  --border-subtle: oklch(0.955 0.005 95);
-  --input: oklch(0.92 0.006 95);
-  --ring: oklch(0.50 0.115 156);
+  /* Hairlines */
+  --border: #e6e5e0;
+  --border-strong: #cfcdc4;
+  --border-subtle: #efeee8;
+  --input: #e6e5e0;
+  --ring: #f54e00;
 
-  --sidebar: oklch(0.975 0.005 95);
+  /* Sidebar */
+  --sidebar: #f7f7f4;
   --sidebar-foreground: var(--ink);
-  --sidebar-primary: oklch(0.50 0.115 156);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.95 0.006 95);
+  --sidebar-primary: #f54e00;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #efeee8;
   --sidebar-accent-foreground: var(--ink);
-  --sidebar-border: oklch(0.92 0.006 95);
-  --sidebar-ring: oklch(0.50 0.115 156);
+  --sidebar-border: #e6e5e0;
+  --sidebar-ring: #f54e00;
+
+  /* Muted soft — for disabled text */
+  --muted-soft: #a09c92;
 }
 
 .dark {
@@ -169,79 +180,71 @@
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";
   }
+  /* Display headings: Inter 400, magazine editorial voice — never bold */
   h1, h2, h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.022em;
-    font-weight: 500;
-  }
-  /* Sunken canvas with subtle grid for the app shell */
-  .app-canvas {
-    background-color: var(--color-surface-sunken);
-    background-image:
-      radial-gradient(circle at 1px 1px, oklch(0.20 0.018 252 / 0.045) 1px, transparent 0);
-    background-size: 28px 28px;
+    letter-spacing: -0.015em;
+    font-weight: 400;
   }
 }
 
+/* Editorial display — Inter 400, negative letter-spacing, magazine voice */
 @utility editorial-h1 {
   font-family: var(--font-display);
   font-weight: 400;
-  letter-spacing: -0.028em;
-  line-height: 1.02;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
 }
 
+/* Money/metric display — Inter 500, tabular nums */
 @utility money-text {
   font-family: var(--font-display);
   font-weight: 500;
   font-feature-settings: "tnum", "lnum";
-  letter-spacing: -0.022em;
+  letter-spacing: -0.01em;
 }
 
 @utility tabular {
   font-variant-numeric: tabular-nums;
 }
 
+/* Card surface — hairline-only depth, no shadows */
 @utility card-surface {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
 }
 
+/* Card raised — same as card-surface (hairline-only, no shadow differentiation) */
 @utility card-raised {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-raised);
+  border-radius: var(--radius-lg);
 }
 
 @utility hairline {
   border: 1px solid var(--color-border);
 }
 
+/* Hero surface — white card on cream canvas, hairline border */
 @utility hero-surface {
   position: relative;
-  background:
-    radial-gradient(120% 80% at 0% 0%, oklch(0.97 0.05 156 / 0.55), transparent 55%),
-    radial-gradient(80% 60% at 100% 0%, oklch(0.97 0.04 250 / 0.35), transparent 60%),
-    linear-gradient(180deg, oklch(1 0 0), oklch(0.985 0.004 95));
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-raised);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
+/* Attention surface — warm gold tinted border */
 @utility attention-surface {
   position: relative;
-  background:
-    linear-gradient(180deg, oklch(0.985 0.035 80), oklch(0.975 0.045 75));
-  border: 1px solid oklch(0.86 0.08 75);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 1px 0 oklch(0.30 0.08 70 / 0.04), 0 8px 24px -12px oklch(0.30 0.08 70 / 0.18);
+  background-color: var(--color-surface);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-lg);
 }
 
 @utility ring-soft {
-  box-shadow: 0 0 0 1px var(--color-border), var(--shadow-card);
+  box-shadow: 0 0 0 1px var(--color-border);
 }
 
 @utility live-dot {
@@ -250,13 +253,13 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 9999px;
-  background-color: var(--color-money);
+  background-color: var(--color-primary);
 }
 @utility live-dot-pulse {
   position: absolute;
   inset: -4px;
   border-radius: 9999px;
-  background-color: var(--color-money);
+  background-color: var(--color-primary);
   opacity: 0.35;
   animation: kv-pulse 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
 }
@@ -273,14 +276,14 @@
 }
 
 @utility shimmer {
-  background: linear-gradient(90deg, transparent 0%, oklch(0.20 0.018 252 / 0.06) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, #26251e0f 50%, transparent 100%);
   background-size: 200% 100%;
   animation: kv-shimmer 2.4s linear infinite;
 }
 
 @utility focus-ring {
   outline: none;
-  box-shadow: 0 0 0 3px oklch(0.50 0.115 156 / 0.18);
+  box-shadow: 0 0 0 3px #f54e0030;
 }
 
 /* Subtle progress track */
@@ -288,4 +291,18 @@
   background-color: var(--color-surface-sunken);
   border-radius: 9999px;
   overflow: hidden;
+}
+
+/* App canvas — warm cream, no dot grid */
+@utility app-canvas {
+  background-color: var(--color-background);
+}
+
+/* Caption uppercase — signature micro-label style */
+@utility caption-uppercase {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.88px;
+  text-transform: uppercase;
 }

@@ -1,6 +1,12 @@
-export function LiveDot({ tone = "money" }: { tone?: "money" | "warning" | "info" }) {
+export function LiveDot({ tone = "primary" }: { tone?: "primary" | "money" | "warning" | "info" }) {
   const color =
-    tone === "warning" ? "var(--color-warning)" : tone === "info" ? "var(--color-info)" : "var(--color-money)";
+    tone === "warning"
+      ? "var(--color-warning)"
+      : tone === "info"
+        ? "var(--color-info)"
+        : tone === "money"
+          ? "var(--color-money)"
+          : "var(--color-primary)";
   return (
     <span className="relative inline-flex h-2 w-2 items-center justify-center">
       <span

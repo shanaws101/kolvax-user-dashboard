@@ -9,26 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedOpsRouteImport } from './routes/_authenticated/ops'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
-import { Route as AuthenticatedOpsIndexRouteImport } from './routes/_authenticated/ops.index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
-import { Route as AuthenticatedOpsLogsRouteImport } from './routes/_authenticated/ops.logs'
-import { Route as AuthenticatedOpsBusinessesRouteImport } from './routes/_authenticated/ops.businesses'
-import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
-import { Route as AuthenticatedAppReportsRouteImport } from './routes/_authenticated/app.reports'
-import { Route as AuthenticatedAppEnginesRouteImport } from './routes/_authenticated/app.engines'
-import { Route as AuthenticatedAppCustomersRouteImport } from './routes/_authenticated/app.customers'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
+import { Route as AuthenticatedAppCustomersRouteImport } from './routes/_authenticated/app.customers'
+import { Route as AuthenticatedAppEnginesRouteImport } from './routes/_authenticated/app.engines'
+import { Route as AuthenticatedAppReportsRouteImport } from './routes/_authenticated/app.reports'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -36,18 +36,14 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedOpsRoute = AuthenticatedOpsRouteImport.update({
-  id: '/ops',
-  path: '/ops',
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -55,58 +51,37 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOpsIndexRoute = AuthenticatedOpsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedOpsRoute,
-} as any)
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AuthenticatedOpsLogsRoute = AuthenticatedOpsLogsRouteImport.update({
-  id: '/logs',
-  path: '/logs',
-  getParentRoute: () => AuthenticatedOpsRoute,
-} as any)
-const AuthenticatedOpsBusinessesRoute =
-  AuthenticatedOpsBusinessesRouteImport.update({
-    id: '/businesses',
-    path: '/businesses',
-    getParentRoute: () => AuthenticatedOpsRoute,
-  } as any)
-const AuthenticatedAppSettingsRoute =
-  AuthenticatedAppSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
+const AuthenticatedAppActivityRoute =
+  AuthenticatedAppActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppReportsRoute = AuthenticatedAppReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAppEnginesRoute = AuthenticatedAppEnginesRouteImport.update({
-  id: '/engines',
-  path: '/engines',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
 const AuthenticatedAppCustomersRoute =
   AuthenticatedAppCustomersRouteImport.update({
     id: '/customers',
     path: '/customers',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppActivityRoute =
-  AuthenticatedAppActivityRouteImport.update({
-    id: '/activity',
-    path: '/activity',
+const AuthenticatedAppEnginesRoute = AuthenticatedAppEnginesRouteImport.update({
+  id: '/engines',
+  path: '/engines',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppReportsRoute = AuthenticatedAppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 
@@ -116,16 +91,12 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/ops': typeof AuthenticatedOpsRouteWithChildren
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/customers': typeof AuthenticatedAppCustomersRoute
   '/app/engines': typeof AuthenticatedAppEnginesRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/ops/businesses': typeof AuthenticatedOpsBusinessesRoute
-  '/ops/logs': typeof AuthenticatedOpsLogsRoute
   '/app/': typeof AuthenticatedAppIndexRoute
-  '/ops/': typeof AuthenticatedOpsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -137,10 +108,7 @@ export interface FileRoutesByTo {
   '/app/engines': typeof AuthenticatedAppEnginesRoute
   '/app/reports': typeof AuthenticatedAppReportsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/ops/businesses': typeof AuthenticatedOpsBusinessesRoute
-  '/ops/logs': typeof AuthenticatedOpsLogsRoute
   '/app': typeof AuthenticatedAppIndexRoute
-  '/ops': typeof AuthenticatedOpsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,16 +118,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/ops': typeof AuthenticatedOpsRouteWithChildren
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/customers': typeof AuthenticatedAppCustomersRoute
   '/_authenticated/app/engines': typeof AuthenticatedAppEnginesRoute
   '/_authenticated/app/reports': typeof AuthenticatedAppReportsRoute
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
-  '/_authenticated/ops/businesses': typeof AuthenticatedOpsBusinessesRoute
-  '/_authenticated/ops/logs': typeof AuthenticatedOpsLogsRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
-  '/_authenticated/ops/': typeof AuthenticatedOpsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,16 +133,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/app'
     | '/dashboard'
-    | '/ops'
     | '/app/activity'
     | '/app/customers'
     | '/app/engines'
     | '/app/reports'
     | '/app/settings'
-    | '/ops/businesses'
-    | '/ops/logs'
     | '/app/'
-    | '/ops/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -190,10 +150,7 @@ export interface FileRouteTypes {
     | '/app/engines'
     | '/app/reports'
     | '/app/settings'
-    | '/ops/businesses'
-    | '/ops/logs'
     | '/app'
-    | '/ops'
   id:
     | '__root__'
     | '/'
@@ -202,16 +159,12 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/app'
     | '/_authenticated/dashboard'
-    | '/_authenticated/ops'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/customers'
     | '/_authenticated/app/engines'
     | '/_authenticated/app/reports'
     | '/_authenticated/app/settings'
-    | '/_authenticated/ops/businesses'
-    | '/_authenticated/ops/logs'
     | '/_authenticated/app/'
-    | '/_authenticated/ops/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,18 +176,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -244,18 +190,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/ops': {
-      id: '/_authenticated/ops'
-      path: '/ops'
-      fullPath: '/ops'
-      preLoaderRoute: typeof AuthenticatedOpsRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -265,20 +218,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/app': {
-      id: '/_authenticated/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthenticatedAppRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ops/': {
-      id: '/_authenticated/ops/'
-      path: '/'
-      fullPath: '/ops/'
-      preLoaderRoute: typeof AuthenticatedOpsIndexRouteImport
-      parentRoute: typeof AuthenticatedOpsRoute
-    }
     '/_authenticated/app/': {
       id: '/_authenticated/app/'
       path: '/'
@@ -286,39 +225,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/ops/logs': {
-      id: '/_authenticated/ops/logs'
-      path: '/logs'
-      fullPath: '/ops/logs'
-      preLoaderRoute: typeof AuthenticatedOpsLogsRouteImport
-      parentRoute: typeof AuthenticatedOpsRoute
-    }
-    '/_authenticated/ops/businesses': {
-      id: '/_authenticated/ops/businesses'
-      path: '/businesses'
-      fullPath: '/ops/businesses'
-      preLoaderRoute: typeof AuthenticatedOpsBusinessesRouteImport
-      parentRoute: typeof AuthenticatedOpsRoute
-    }
-    '/_authenticated/app/settings': {
-      id: '/_authenticated/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/reports': {
-      id: '/_authenticated/app/reports'
-      path: '/reports'
-      fullPath: '/app/reports'
-      preLoaderRoute: typeof AuthenticatedAppReportsRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/engines': {
-      id: '/_authenticated/app/engines'
-      path: '/engines'
-      fullPath: '/app/engines'
-      preLoaderRoute: typeof AuthenticatedAppEnginesRouteImport
+    '/_authenticated/app/activity': {
+      id: '/_authenticated/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/customers': {
@@ -328,11 +239,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCustomersRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/activity': {
-      id: '/_authenticated/app/activity'
-      path: '/activity'
-      fullPath: '/app/activity'
-      preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
+    '/_authenticated/app/engines': {
+      id: '/_authenticated/app/engines'
+      path: '/engines'
+      fullPath: '/app/engines'
+      preLoaderRoute: typeof AuthenticatedAppEnginesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/reports': {
+      id: '/_authenticated/app/reports'
+      path: '/reports'
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AuthenticatedAppReportsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
   }
@@ -359,31 +284,14 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
 const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
-interface AuthenticatedOpsRouteChildren {
-  AuthenticatedOpsBusinessesRoute: typeof AuthenticatedOpsBusinessesRoute
-  AuthenticatedOpsLogsRoute: typeof AuthenticatedOpsLogsRoute
-  AuthenticatedOpsIndexRoute: typeof AuthenticatedOpsIndexRoute
-}
-
-const AuthenticatedOpsRouteChildren: AuthenticatedOpsRouteChildren = {
-  AuthenticatedOpsBusinessesRoute: AuthenticatedOpsBusinessesRoute,
-  AuthenticatedOpsLogsRoute: AuthenticatedOpsLogsRoute,
-  AuthenticatedOpsIndexRoute: AuthenticatedOpsIndexRoute,
-}
-
-const AuthenticatedOpsRouteWithChildren =
-  AuthenticatedOpsRoute._addFileChildren(AuthenticatedOpsRouteChildren)
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedOpsRoute: typeof AuthenticatedOpsRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedOpsRoute: AuthenticatedOpsRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

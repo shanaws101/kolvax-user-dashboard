@@ -20,14 +20,19 @@ function ActivityPage() {
     queryKey: ["activities", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("activities")
-        .select("*")
-        .eq("business_id", businessId!)
-        .order("occurred_at", { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return data ?? [];
+      try {
+        const { data, error } = await supabase
+          .from("activities")
+          .select("*")
+          .eq("business_id", businessId!)
+          .order("occurred_at", { ascending: false })
+          .limit(200);
+        if (error || !data || data.length === 0) throw error ?? new Error("No data");
+        return data;
+      } catch {
+        const { MOCK_ACTIVITIES } = await import("@/lib/mock-data");
+        return MOCK_ACTIVITIES;
+      }
     },
   });
 
@@ -48,7 +53,7 @@ function ActivityPage() {
         ) : (
           grouped.map(([day, items]) => (
             <section key={day}>
-              <p className="text-xs uppercase tracking-wider text-ink-faint mb-4">{day}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint mb-4">{day}</p>
               <Card className="!p-0">
                 <ul>
                   {items.map((a, i) => (

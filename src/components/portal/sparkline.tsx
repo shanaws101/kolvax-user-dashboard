@@ -50,7 +50,7 @@ export function Sparkline({
     >
       <defs>
         <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.18" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -99,13 +99,13 @@ export function ProgressRing({
   value,
   size = 44,
   stroke = 4,
-  tone = "money",
+  tone = "primary",
   label,
 }: {
   value: number; // 0..1
   size?: number;
   stroke?: number;
-  tone?: "money" | "info" | "warning";
+  tone?: "primary" | "money" | "info" | "warning";
   label?: string;
 }) {
   const r = (size - stroke) / 2;
@@ -113,11 +113,17 @@ export function ProgressRing({
   const clamped = Math.max(0, Math.min(1, value));
   const offset = c * (1 - clamped);
   const color =
-    tone === "money" ? "var(--color-money)" : tone === "info" ? "var(--color-info)" : "var(--color-warning)";
+    tone === "primary"
+      ? "var(--color-primary)"
+      : tone === "money"
+        ? "var(--color-money)"
+        : tone === "info"
+          ? "var(--color-info)"
+          : "var(--color-warning)";
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border-strong)" strokeOpacity={0.4} strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
           cy={size / 2}

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { KolvaxLogo } from "@/components/portal/kolvax-logo";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -37,11 +38,15 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
-      <div className="hidden lg:flex flex-col justify-between p-12 bg-surface-muted border-r border-border">
-        <Link to="/" className="editorial-h1 text-xl">KOLVAX</Link>
+      {/* LEFT — editorial panel */}
+      <div className="hidden lg:flex flex-col justify-between p-12 bg-surface border-r border-border">
+        <Link to="/" className="inline-flex items-center gap-2.5">
+          <KolvaxLogo className="h-7 w-7" />
+          <span className="editorial-h1 text-xl text-foreground font-semibold">KOLVAX</span>
+        </Link>
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-money mb-4">Revenue Recovery Platform</p>
-          <p className="editorial-h1 text-3xl text-foreground max-w-md">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-primary mb-4">Revenue Recovery Platform</p>
+          <p className="editorial-h1 text-3xl text-foreground max-w-md leading-[1.2]">
             "We recovered $4,820 last month — and I didn't have to do a thing."
           </p>
           <p className="mt-4 text-sm text-ink-soft">Maria Alvarez, Bella Beauty Studio</p>
@@ -49,9 +54,13 @@ function AuthPage() {
         <p className="text-xs text-ink-faint">© {new Date().getFullYear()} KOLVAX</p>
       </div>
 
+      {/* RIGHT — form */}
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm">
-          <Link to="/" className="lg:hidden editorial-h1 text-xl block mb-8">KOLVAX</Link>
+          <Link to="/" className="lg:hidden inline-flex items-center gap-2.5 mb-8">
+            <KolvaxLogo className="h-7 w-7" />
+            <span className="editorial-h1 text-xl text-foreground font-semibold">KOLVAX</span>
+          </Link>
           <h1 className="editorial-h1 text-3xl text-foreground">
             {mode === "signin" ? "Welcome back" : "Create your account"}
           </h1>
@@ -71,7 +80,7 @@ function AuthPage() {
             {mode === "signin" ? "New to KOLVAX?" : "Already have an account?"}{" "}
             <button
               onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-              className="text-money font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               {mode === "signin" ? "Create an account" : "Sign in"}
             </button>
@@ -141,8 +150,8 @@ function SignUpForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-const inputCls = "w-full rounded-md border border-input bg-surface px-3 py-2 text-sm outline-none focus:border-money focus:ring-2 focus:ring-money/20";
-const btnCls = "w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60";
+const inputCls = "w-full rounded-md border border-input bg-surface px-3 py-3 text-sm outline-none transition-colors placeholder:text-ink-faint focus:border-primary focus:ring-2 focus:ring-[#f54e0020] h-11";
+const btnCls = "w-full inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary-active transition-colors disabled:opacity-60 h-11";
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (

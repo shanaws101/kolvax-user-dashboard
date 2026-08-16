@@ -16,12 +16,10 @@ export type Opportunity = {
 
 export function OpportunityCard({ o }: { o: Opportunity }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-raised)] hover:-translate-y-0.5">
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-money/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
+    <div className="group relative overflow-hidden rounded-lg border border-border bg-surface p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-ink-faint">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">
             <LiveDot />
             <span>In progress</span>
             <span className="text-border-strong">·</span>
@@ -33,7 +31,7 @@ export function OpportunityCard({ o }: { o: Opportunity }) {
           <p className="mt-1 text-sm text-ink-soft leading-snug line-clamp-2">{o.context}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[10px] uppercase tracking-wider text-ink-faint">Value</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint">Value</p>
           <p className="money-text text-xl text-money leading-none mt-1">
             {formatMoney(o.valueCents)}
           </p>
@@ -47,7 +45,7 @@ export function OpportunityCard({ o }: { o: Opportunity }) {
         </div>
         <div className="track h-1.5">
           <div
-            className="h-full bg-gradient-to-r from-money to-money-deep transition-[width] duration-700"
+            className="h-full bg-gradient-to-r from-primary to-primary-active transition-[width] duration-700"
             style={{ width: `${Math.round(o.progress * 100)}%` }}
           />
         </div>
@@ -55,7 +53,7 @@ export function OpportunityCard({ o }: { o: Opportunity }) {
 
       <div className="mt-4 flex items-center justify-between gap-3 pt-4 border-t border-border-subtle">
         <div className="flex items-center gap-2 text-xs text-ink-soft min-w-0">
-          <ArrowRight className="h-3.5 w-3.5 text-money shrink-0" strokeWidth={2} />
+          <ArrowRight className="h-3.5 w-3.5 text-primary shrink-0" strokeWidth={2} />
           <span className="truncate">{o.action}</span>
         </div>
         <div className="flex items-center gap-1 text-[11px] text-ink-faint shrink-0">

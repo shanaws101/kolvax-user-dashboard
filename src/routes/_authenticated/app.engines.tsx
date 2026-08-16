@@ -43,13 +43,18 @@ function EnginesPage() {
     queryKey: ["engines", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("revenue_engines")
-        .select("*")
-        .eq("business_id", businessId!)
-        .order("engine_type");
-      if (error) throw error;
-      return data ?? [];
+      try {
+        const { data, error } = await supabase
+          .from("revenue_engines")
+          .select("*")
+          .eq("business_id", businessId!)
+          .order("engine_type");
+        if (error || !data || data.length === 0) throw error ?? new Error("No data");
+        return data;
+      } catch {
+        const { MOCK_ENGINES } = await import("@/lib/mock-data");
+        return MOCK_ENGINES;
+      }
     },
   });
 
@@ -72,9 +77,9 @@ function EnginesPage() {
       ) : (
         <>
           <section className="grid gap-4 sm:grid-cols-3 mb-10">
-            <SummaryStat label="Recovered this month" value={formatMoney(totalRecovered)} tone="money" />
-            <SummaryStat label="Opportunities in motion" value={String(totalInMotion)} tone="info" />
-            <SummaryStat label="Engines healthy" value={`${healthyCount} / ${(engines ?? []).length}`} tone="money" />
+            <SummaryStat label="Recovered this month" value={formatMoney(totalRecovered)} />
+            <SummaryStat label="Opportunities in motion" value={String(totalInMotion)} />
+            <SummaryStat label="Engines healthy" value={`${healthyCount} / ${(engines ?? []).length}`} />
           </section>
 
           <div className="space-y-5">
@@ -86,32 +91,25 @@ function EnginesPage() {
               (engines ?? []).map((e) => {
                 const Icon = ICONS[e.engine_type] ?? Sparkles;
                 const healthy = e.health === "healthy";
-                const tone = healthy ? "money" : e.health === "attention" ? "warning" : "neutral";
+                const tone = healthy ? "primary" : e.health === "attention" ? "warning" : "neutral";
                 const utilization = Math.min(1, (e.opportunities_in_motion ?? 0) / 12);
                 return (
                   <article
                     key={e.id}
-                    className="group relative overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-raised)] transition-all"
+                    className="group relative overflow-hidden rounded-lg border border-border bg-surface"
                   >
                     <div className="grid lg:grid-cols-[1.3fr_1fr]">
                       {/* LEFT — identity + KPI */}
                       <div className="p-7 lg:p-8 border-b lg:border-b-0 lg:border-r border-border-subtle relative">
-                        <div
-                          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-                          style={{
-                            background:
-                              "radial-gradient(60% 50% at 0% 0%, var(--color-money), transparent 70%)",
-                          }}
-                        />
                         <div className="relative">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3.5">
-                              <span className="grid h-11 w-11 place-items-center rounded-xl bg-money-soft text-money border border-money/15">
+                              <span className="grid h-11 w-11 place-items-center rounded-lg bg-[#f54e0010] text-primary border border-[#f54e0020]">
                                 <Icon className="h-5 w-5" strokeWidth={1.75} />
                               </span>
                               <div>
-                                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-                                  <LiveDot tone={tone === "warning" ? "warning" : "money"} />
+                                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">
+                                  <LiveDot tone={tone === "warning" ? "warning" : "primary"} />
                                   <span>
                                     {healthy ? "Healthy" : e.health === "attention" ? "Needs review" : "Offline"}
                                   </span>
@@ -123,7 +121,7 @@ function EnginesPage() {
                             </div>
                             <ProgressRing
                               value={utilization}
-                              tone={tone === "warning" ? "warning" : "money"}
+                              tone={tone === "warning" ? "warning" : "primary"}
                               size={52}
                               stroke={4}
                             />
@@ -135,7 +133,7 @@ function EnginesPage() {
 
                           <div className="mt-7 flex items-end justify-between gap-4">
                             <div>
-                              <p className="text-[10px] uppercase tracking-wider text-ink-faint">
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint">
                                 Recovered this month
                               </p>
                               <p className="money-text text-4xl text-foreground mt-1 leading-none">
@@ -153,23 +151,23 @@ function EnginesPage() {
                       </div>
 
                       {/* RIGHT — operational detail */}
-                      <div className="p-7 lg:p-8 bg-surface-sunken/40">
+                      <div className="p-7 lg:p-8 bg-surface-muted">
                         <div className="grid grid-cols-2 gap-4">
                           <Metric label="In motion" value={String(e.opportunities_in_motion ?? 0)} />
                           <Metric label="Last outcome" value={formatRelative(e.last_outcome_at)} />
                         </div>
 
                         <div className="mt-6">
-                          <p className="text-[10px] uppercase tracking-wider text-ink-faint mb-2">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint mb-2">
                             Capacity
                           </p>
                           <div className="track h-2">
                             <div
                               className={
-                                "h-full transition-[width] duration-700 " +
+                                "h-full transition-[width] duration-700 rounded-full " +
                                 (tone === "warning"
                                   ? "bg-warning"
-                                  : "bg-gradient-to-r from-money to-money-deep")
+                                  : "bg-gradient-to-r from-primary to-primary-active")
                               }
                               style={{ width: `${Math.round(utilization * 100)}%` }}
                             />
@@ -180,15 +178,15 @@ function EnginesPage() {
                         </div>
 
                         {e.notes && (
-                          <div className="mt-6 rounded-lg border border-border-subtle bg-surface p-3.5">
-                            <p className="text-[10px] uppercase tracking-wider text-ink-faint mb-1">
+                          <div className="mt-6 rounded-lg border border-border bg-surface p-3.5">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint mb-1">
                               Operator note
                             </p>
                             <p className="text-sm text-ink-soft leading-relaxed">{e.notes}</p>
                           </div>
                         )}
 
-                        <div className="mt-6 flex items-center justify-end text-xs text-money opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="mt-6 flex items-center justify-end text-xs text-primary opacity-70 group-hover:opacity-100 transition-opacity">
                           <span className="inline-flex items-center gap-1 font-medium">
                             View engine timeline
                             <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
@@ -210,20 +208,14 @@ function EnginesPage() {
 function SummaryStat({
   label,
   value,
-  tone,
 }: {
   label: string;
   value: string;
-  tone: "money" | "info";
 }) {
   return (
-    <div className="card-raised p-5">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">{label}</p>
-      <p
-        className={
-          "money-text text-3xl mt-2 leading-none " + (tone === "money" ? "text-foreground" : "text-foreground")
-        }
-      >
+    <div className="card-surface p-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">{label}</p>
+      <p className="money-text text-3xl mt-2 leading-none text-foreground">
         {value}
       </p>
     </div>
@@ -232,8 +224,8 @@ function SummaryStat({
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border-subtle bg-surface p-3.5">
-      <p className="text-[10px] uppercase tracking-wider text-ink-faint">{label}</p>
+    <div className="rounded-lg border border-border bg-surface p-3.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-faint">{label}</p>
       <p className="mt-1 text-base font-medium text-foreground tabular">{value}</p>
     </div>
   );

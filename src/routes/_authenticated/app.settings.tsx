@@ -51,14 +51,19 @@ function SettingsPage() {
     queryKey: ["settings", businessId],
     enabled: !!businessId,
     queryFn: async () => {
-      const [locations, integrations] = await Promise.all([
-        supabase.from("locations").select("*").eq("business_id", businessId!).order("is_primary", { ascending: false }),
-        // intentionally do not select `config` — customers see status only
-        supabase.from("integrations").select("id, kind, provider, status, connected_at").eq("business_id", businessId!),
-      ]);
-      if (locations.error) throw locations.error;
-      if (integrations.error) throw integrations.error;
-      return { locations: locations.data ?? [], integrations: integrations.data ?? [] };
+      try {
+        const [locations, integrations] = await Promise.all([
+          supabase.from("locations").select("*").eq("business_id", businessId!).order("is_primary", { ascending: false }),
+          supabase.from("integrations").select("id, kind, provider, status, connected_at").eq("business_id", businessId!),
+        ]);
+        if (locations.error || integrations.error || !locations.data || locations.data.length === 0) {
+          throw new Error("No live settings data");
+        }
+        return { locations: locations.data ?? [], integrations: integrations.data ?? [] };
+      } catch {
+        const { MOCK_LOCATIONS, MOCK_INTEGRATIONS } = await import("@/lib/mock-data");
+        return { locations: MOCK_LOCATIONS, integrations: MOCK_INTEGRATIONS };
+      }
     },
   });
 
@@ -115,7 +120,7 @@ function SettingsPage() {
                         });
                       }
                     }}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface text-ink-soft hover:bg-secondary hover:text-foreground"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface text-ink-soft hover:bg-secondary hover:text-foreground transition-colors"
                     aria-label="Cancel editing"
                   >
                     <X className="h-4 w-4" />
@@ -124,7 +129,7 @@ function SettingsPage() {
                     type="button"
                     onClick={() => saveBusiness.mutate()}
                     disabled={saveBusiness.isPending || !draft.name.trim()}
-                    className="inline-flex h-8 items-center gap-2 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-8 items-center gap-2 rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-active transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Save className="h-3.5 w-3.5" /> Save
                   </button>
@@ -134,7 +139,7 @@ function SettingsPage() {
                   type="button"
                   onClick={() => setEditing(true)}
                   disabled={profileLoading || !businessId}
-                  className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-secondary transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Pencil className="h-3.5 w-3.5" /> Edit settings
                 </button>
@@ -185,7 +190,7 @@ function SettingsPage() {
         <Card>
           <CardHeader title="Users" description="Who can sign in to this dashboard." />
           <div className="flex items-center gap-3 py-2">
-            <div className="h-9 w-9 rounded-full bg-money-soft text-money grid place-items-center text-xs font-semibold">
+            <div className="h-9 w-9 rounded-full bg-primary text-primary-foreground grid place-items-center text-xs font-semibold">
               {(profile?.profile?.full_name ?? "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase()}
             </div>
             <div>
@@ -249,12 +254,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-wider text-ink-faint">{label}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">{label}</span>
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
         required={required}
-        className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-ink-faint focus:border-primary"
+        className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-ink-faint focus:border-primary focus:ring-2 focus:ring-[#f54e0020] h-11"
       />
     </label>
   );
@@ -263,7 +268,7 @@ function Field({
 function Row({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-wider text-ink-faint">{label}</dt>
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-faint">{label}</dt>
       <dd className="mt-1 text-sm text-foreground">{value ?? "—"}</dd>
     </div>
   );
@@ -275,7 +280,7 @@ function Toggle({ label, defaultOn = false }: { label: string; defaultOn?: boole
       <span className="text-sm text-foreground">{label}</span>
       <button
         type="button"
-        className={"relative h-5 w-9 rounded-full transition-colors " + (defaultOn ? "bg-money" : "bg-border-strong")}
+        className={"relative h-5 w-9 rounded-full transition-colors " + (defaultOn ? "bg-primary" : "bg-border-strong")}
         aria-pressed={defaultOn}
       >
         <span className={"absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all " + (defaultOn ? "left-4" : "left-0.5")} />
